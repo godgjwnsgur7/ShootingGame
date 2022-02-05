@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     int bulletSpeed;
 
     public string enemyName;
+    public int enemyScore;
     public float speed;
     public int health;
     public Sprite[] sprites; // 기본상태 0, 피격상태 1
@@ -76,6 +77,8 @@ public class Enemy : MonoBehaviour
 
         if(health <= 0)
         {
+            Player playerLogic = player.GetComponent<Player>();
+            playerLogic.score += enemyScore;
             Destroy(gameObject);
         }
     }

@@ -6,6 +6,9 @@ public class Player : MonoBehaviour
 {
     int bulletSpeed;
 
+    public int life;
+    public int score;
+
     public float speed;
     public float power;
     public float maxPower;
@@ -17,21 +20,26 @@ public class Player : MonoBehaviour
     public bool isTouchLeft;
     public bool isTouchRight;
 
+    public bool isHit;
+
     public GameObject bulletObjA;
     public GameObject bulletObjB;
 
     public GameManager gameManager;
+
 
     Animator anim;
 
     void Awake()
     {
         anim = GetComponent<Animator>();
+        life = 3;
         bulletSpeed = 7;
         speed = 5;
         power = 1;
         maxPower = 3;
         maxShotDelay = 0.15f;
+        isHit = false;
     }
 
     void Update()
@@ -121,7 +129,17 @@ public class Player : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
-            gameManager.RespawnPlayer();
+            if (isHit) return;
+            
+            isHit = true;
+            life--;
+            gameManager.UpdateLifeIcon(life);
+
+            if (life == 0)
+                gameManager.GameOver();
+            else
+                gameManager.RespawnPlayer();
+
             gameObject.SetActive(false);
             Destroy(collision.gameObject);
         }

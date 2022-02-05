@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class GameManager : MonoBehaviour
     public float curSpawnDelay;
 
     public GameObject player;
+    public Text scoreText;
+    public Image[] lifeImage;
+    public GameObject GameOverSet;
 
     void Awake()
     {
@@ -27,6 +32,10 @@ public class GameManager : MonoBehaviour
             maxSpawnDelay = Random.Range(0.5f, 3f);
             curSpawnDelay = 0;
         }
+
+        //#. UI Score Update
+        Player playerLogic = player.GetComponent<Player>();
+        scoreText.text = string.Format("{0:n0}", playerLogic.score);
     }
 
     void SpawnEnemy()
@@ -57,6 +66,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void UpdateLifeIcon(int life)
+    {
+        for (int i = 0; i < 3; i++)
+            lifeImage[i].color = new Color(1, 1, 1, 0); // 투명
+
+        for (int i = 0; i < life; i++)
+            lifeImage[i].color = new Color(1, 1, 1, 1); // 반투명
+    }
+
+    public void GameOver()
+    {
+        GameOverSet.SetActive(true);
+    }
+
+    public void GameRetry()
+    {
+        SceneManager.LoadScene(0); // 씬 빌드에 할당된 번호 (씬 이름도 가능)
+    }
+
     public void RespawnPlayer()
     {
         Invoke("RespawnPlayerExe", 2f);
@@ -66,5 +94,8 @@ public class GameManager : MonoBehaviour
     {
         player.transform.position = Vector3.down * 3.5f;
         player.SetActive(true);
+
+        Player playerLogic = player.GetComponent<Player>();
+        playerLogic.isHit = false;
     }
 }
