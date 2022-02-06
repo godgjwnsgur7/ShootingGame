@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     public int enemyScore;
     public float speed;
     public int health;
-    public Sprite[] sprites; // 기본상태 0, 피격상태 1
+    public Sprite[] sprites; // Basic Image 0, Hit Image 1
 
     public float maxShotDelay;
     public float curShotDelay;
@@ -99,7 +99,7 @@ public class Enemy : MonoBehaviour
             return;
 
         health -= dmg;
-        spriteRenderer.sprite = sprites[1]; // 피격 이미지
+        spriteRenderer.sprite = sprites[1]; // Hit Image
         Invoke("ReturnSprite", 0.1f);
 
         if(health <= 0)

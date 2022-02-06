@@ -13,7 +13,7 @@ public class Background : MonoBehaviour
 
     void Awake()
     {
-        veiwHeight = Camera.main.orthographicSize * 2; // 카메라 높이
+        veiwHeight = Camera.main.orthographicSize * 2; // Camera Height
         startIndex = 2;
         endIndex = 0;
     }

@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player; // 적 생성후 플레이어 변수를 넘겨줌
-        enemyLogic.objectManager = objectManager; // 오브젝트매니저도
+        enemyLogic.objectManager = objectManager;
 
         if(enemyPoint == 5 || enemyPoint == 6) //#.Right Spawn
         {
@@ -122,8 +122,8 @@ public class GameManager : MonoBehaviour
         {
             rigid.velocity = new Vector2(0, enemyLogic.speed * (-1));
         }
-        
-        //#. 리스폰 인덱스 증가
+
+        //#. Increase Respawn Index
         spawnIndex++;
         if(spawnIndex == spawnList.Count)
         {
@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        //#. 다음 리스폰 딜레이 갱신
+        //#. Update Next Respawn Delay
         nextSpawnDelay = spawnList[spawnIndex].delay;
     }
 
