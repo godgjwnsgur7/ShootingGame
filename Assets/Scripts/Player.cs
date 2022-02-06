@@ -9,9 +9,11 @@ public class Player : MonoBehaviour
     public int life;
     public int score;
 
-    public float speed;
-    public float power;
-    public float maxPower;
+    public int speed;
+    public int power;
+    public int maxPower;
+    public int boom;
+    public int maxBoom;
     public float maxShotDelay;
     public float curShotDelay;
 
@@ -19,11 +21,13 @@ public class Player : MonoBehaviour
     public bool isTouchBottom;
     public bool isTouchLeft;
     public bool isTouchRight;
+    public bool isBoomTime;
 
     public bool isHit;
 
     public GameObject bulletObjA;
     public GameObject bulletObjB;
+    public GameObject BoomEffect;
 
     public GameManager gameManager;
 
@@ -38,8 +42,9 @@ public class Player : MonoBehaviour
         speed = 5;
         power = 1;
         maxPower = 3;
+        boom = 0;
+        maxBoom = 3;
         maxShotDelay = 0.15f;
-        isHit = false;
     }
 
     void Update()
@@ -47,6 +52,7 @@ public class Player : MonoBehaviour
         Move();
         Fire();
         Reload();
+        Boom();
     }
 
     void Move()
@@ -71,7 +77,7 @@ public class Player : MonoBehaviour
         if (!Input.GetButton("Fire1") || curShotDelay < maxShotDelay)
             return;
 
-        switch(power)
+        switch (power)
         {
             case 1: // Power 1
                 GameObject bullet = Instantiate(bulletObjA, transform.position, transform.rotation);
@@ -79,8 +85,8 @@ public class Player : MonoBehaviour
                 rigid.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
                 break;
             case 2: // Power 2
-                GameObject bulletR = Instantiate(bulletObjA, transform.position + Vector3.right*0.1f, transform.rotation);
-                GameObject bulletL = Instantiate(bulletObjA, transform.position + Vector3.left*0.1f, transform.rotation);
+                GameObject bulletR = Instantiate(bulletObjA, transform.position + Vector3.right * 0.1f, transform.rotation);
+                GameObject bulletL = Instantiate(bulletObjA, transform.position + Vector3.left * 0.1f, transform.rotation);
                 Rigidbody2D rigidR = bulletR.GetComponent<Rigidbody2D>();
                 Rigidbody2D rigidL = bulletL.GetComponent<Rigidbody2D>();
                 rigidR.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
@@ -106,6 +112,40 @@ public class Player : MonoBehaviour
     {
         curShotDelay += Time.deltaTime;
     }
+
+
+    void Boom()
+    {
+        if (!Input.GetButton("Fire2") || isBoomTime)
+            return;
+
+            if (boom == 0)
+            return;
+
+        boom--;
+        isBoomTime = true;
+        gameManager.UpdateBoomIcon(boom);
+
+        //#1.Effect visible
+        BoomEffect.SetActive(true);
+        Invoke("OffBoomEffect", 1.5f);
+
+        //#2.Remove Enemy
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            Enemy enemyLogic = enemies[i].GetComponent<Enemy>();
+            enemyLogic.OnHit(50);
+        }
+
+        //#3. Remove Enemy Bullet
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
+        for (int i = 0; i < bullets.Length; i++)
+        {
+            Destroy(bullets[i]);
+        }
+    }
+
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -143,6 +183,38 @@ public class Player : MonoBehaviour
             gameObject.SetActive(false);
             Destroy(collision.gameObject);
         }
+        else if(collision.gameObject.tag == "Item")
+        {
+            Item item = collision.gameObject.GetComponent<Item>();
+            switch(item.type)
+            {
+                case "Coin":
+                    score += 1000;
+                    break;
+                case "Power":
+                    if (power == maxPower)
+                        score += 500;
+                    else
+                        power++;
+                    break;
+                case "Boom":
+                    if (boom == maxBoom)
+                        score += 500;
+                    else
+                    {
+                        boom++;
+                        gameManager.UpdateBoomIcon(boom);
+                    }
+                    break;
+            }
+            Destroy(collision.gameObject);
+        }
+    }
+
+    void OffBoomEffect()
+    {
+        BoomEffect.SetActive(false);
+        isBoomTime = false;
     }
 
     void OnTriggerExit2D(Collider2D collision)

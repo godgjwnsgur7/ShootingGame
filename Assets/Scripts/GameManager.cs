@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject player;
     public Text scoreText;
     public Image[] lifeImage;
+    public Image[] boomImage;
     public GameObject GameOverSet;
 
     void Awake()
@@ -68,11 +69,23 @@ public class GameManager : MonoBehaviour
 
     public void UpdateLifeIcon(int life)
     {
+        //#.UI Life Init Disable
         for (int i = 0; i < 3; i++)
             lifeImage[i].color = new Color(1, 1, 1, 0); // 투명
 
+        //#.UI Life Active
         for (int i = 0; i < life; i++)
             lifeImage[i].color = new Color(1, 1, 1, 1); // 반투명
+    }
+    public void UpdateBoomIcon(int boom)
+    {
+        //#.UI Boom Init Disable
+        for (int i = 0; i < 3; i++)
+            boomImage[i].color = new Color(1, 1, 1, 0); // 투명
+
+        //#.UI Boom Active
+        for (int i = 0; i < boom; i++)
+            boomImage[i].color = new Color(1, 1, 1, 1); // 반투명
     }
 
     public void GameOver()

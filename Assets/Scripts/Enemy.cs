@@ -17,6 +17,11 @@ public class Enemy : MonoBehaviour
 
     public GameObject bulletObjA;
     public GameObject bulletObjB;
+
+    public GameObject ItemBoom;
+    public GameObject ItemCoin;
+    public GameObject ItemPower;
+
     public GameObject player;
 
     SpriteRenderer spriteRenderer;
@@ -69,8 +74,11 @@ public class Enemy : MonoBehaviour
         curShotDelay += Time.deltaTime;
     }
 
-    void OnHit(int dmg)
+    public void OnHit(int dmg)
     {
+        if (health <= 0)
+            return;
+
         health -= dmg;
         spriteRenderer.sprite = sprites[1]; // 피격 이미지
         Invoke("ReturnSprite", 0.1f);
@@ -79,6 +87,20 @@ public class Enemy : MonoBehaviour
         {
             Player playerLogic = player.GetComponent<Player>();
             playerLogic.score += enemyScore;
+
+            //#.Random Ratio Item Drop
+            int ran = Random.Range(0, 10);
+            if (ran < 6)
+            {
+                Debug.Log("Not Item");
+            }
+            else if (ran < 8) // Coin 20%
+                Instantiate(ItemCoin, transform.position, ItemCoin.transform.rotation);
+            else if (ran < 9) // Power 10%
+                Instantiate(ItemPower, transform.position, ItemCoin.transform.rotation);
+            else if (ran > 10) // Boom 10%
+                Instantiate(ItemBoom, transform.position, ItemCoin.transform.rotation);
+
             Destroy(gameObject);
         }
     }
