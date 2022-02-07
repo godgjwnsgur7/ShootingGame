@@ -172,7 +172,9 @@ public class Player : MonoBehaviour
         //#3. Remove Enemy Bullet
         GameObject[] bulletsA = objectManager.GetPool("BulletEnemyA");
         GameObject[] bulletsB = objectManager.GetPool("BulletEnemyB");
-        
+        GameObject[] bulletsC = objectManager.GetPool("BulletBossA");
+        GameObject[] bulletsD = objectManager.GetPool("BulletBossB");
+
         for (int i = 0; i < bulletsA.Length; i++)
         {
             if (bulletsA[i].activeSelf)
@@ -182,6 +184,16 @@ public class Player : MonoBehaviour
         {
             if (bulletsB[i].activeSelf)
                 bulletsB[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletsC.Length; i++)
+        {
+            if (bulletsC[i].activeSelf)
+                bulletsC[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletsD.Length; i++)
+        {
+            if (bulletsD[i].activeSelf)
+                bulletsD[i].SetActive(false);
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
+    public GameObject enemyBPrefab;
     public GameObject enemyLPrefab;
     public GameObject enemyMPrefab;
     public GameObject enemySPrefab;
@@ -17,7 +18,10 @@ public class ObjectManager : MonoBehaviour
     public GameObject bulletEnemyAPrefab;
     public GameObject bulletEnemyBPrefab;
     public GameObject bulletFollowerPrefab;
+    public GameObject bulletBossAPrefab;
+    public GameObject bulletBossBPrefab;
 
+    GameObject[] enemyB;
     GameObject[] enemyL;
     GameObject[] enemyM;
     GameObject[] enemyS;
@@ -31,13 +35,16 @@ public class ObjectManager : MonoBehaviour
     GameObject[] bulletEnemyA;
     GameObject[] bulletEnemyB;
     GameObject[] bulletFollower;
+    GameObject[] bulletBossA;
+    GameObject[] bulletBossB;
 
     GameObject[] targetPool;
 
     void Awake()
     {
-        enemyL = new GameObject[10];
-        enemyM = new GameObject[10];
+        enemyB = new GameObject[10];
+        enemyL = new GameObject[20];
+        enemyM = new GameObject[20];
         enemyS = new GameObject[20];
 
         itemCoin = new GameObject[20];
@@ -49,12 +56,20 @@ public class ObjectManager : MonoBehaviour
         bulletEnemyA = new GameObject[100];
         bulletEnemyB = new GameObject[100];
         bulletFollower = new GameObject[100];
+        bulletBossA = new GameObject[500];
+        bulletBossB = new GameObject[50];
+
 
         Generate();
     }
     void Generate()
     {
         // #1. Enemy
+        for (int index = 0; index < enemyB.Length; index++)
+        {
+            enemyB[index] = Instantiate(enemyBPrefab);
+            enemyB[index].SetActive(false);
+        }
         for (int index = 0; index < enemyL.Length; index++)
         {
             enemyL[index] = Instantiate(enemyLPrefab);
@@ -114,12 +129,25 @@ public class ObjectManager : MonoBehaviour
             bulletFollower[index] = Instantiate(bulletFollowerPrefab);
             bulletFollower[index].SetActive(false);
         }
+        for (int index = 0; index < bulletBossA.Length; index++)
+        {
+            bulletBossA[index] = Instantiate(bulletBossAPrefab);
+            bulletBossA[index].SetActive(false);
+        }
+        for (int index = 0; index < bulletBossB.Length; index++)
+        {
+            bulletBossB[index] = Instantiate(bulletBossBPrefab);
+            bulletBossB[index].SetActive(false);
+        }
     }
 
     public GameObject MakeObj(string type) // 오브젝트 풀에 접근할 수 있는 함수
     {
         switch (type)
         {
+            case "EnemyB":
+                targetPool = enemyB;
+                break;
             case "EnemyL":
                 targetPool = enemyL;
                 break;
@@ -152,6 +180,12 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletFollower":
                 targetPool = bulletFollower;
+                break;
+            case "BulletBossA":
+                targetPool = bulletBossA;
+                break;
+            case "BulletBossB":
+                targetPool = bulletBossB;
                 break;
             default:
                 Debug.Log(targetPool + "MakeObj() switch not find");
@@ -175,6 +209,9 @@ public class ObjectManager : MonoBehaviour
     {
         switch (type)
         {
+            case "EnemyB":
+                targetPool = enemyB;
+                break;
             case "EnemyL":
                 targetPool = enemyL;
                 break;
@@ -207,6 +244,12 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletFollower":
                 targetPool = bulletFollower;
+                break;
+            case "BulletBossA":
+                targetPool = bulletBossA;
+                break;
+            case "BulletBossB":
+                targetPool = bulletBossB;
                 break;
             default:
                 Debug.Log(targetPool + "GetPool() switch not find");

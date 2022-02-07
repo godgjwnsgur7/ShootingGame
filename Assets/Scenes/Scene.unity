@@ -667,7 +667,7 @@ RectTransform:
   - {fileID: 1872118729}
   - {fileID: 495527909}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1302,7 +1302,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 6
   m_Sprite: {fileID: 612596470744354101, guid: 606e3127513c6c74d852755e18a67337, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1612,7 +1612,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1002208505
 GameObject:
@@ -1934,7 +1934,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 6
   m_Sprite: {fileID: 612596470744354101, guid: 606e3127513c6c74d852755e18a67337, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2319,7 +2319,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 6
   m_Sprite: {fileID: 612596470744354101, guid: 606e3127513c6c74d852755e18a67337, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2763,8 +2763,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &1585937620
-BoxCollider2D:
+--- !u!58 &1585937620
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2776,19 +2776,9 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
+  m_Offset: {x: 0, y: -0.1}
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5}
-  m_EdgeRadius: 0
+  m_Radius: 0.25
 --- !u!95 &1585937621
 Animator:
   serializedVersion: 3
@@ -3001,6 +2991,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f414e8e8453d21040b83b41134fc93e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyBPrefab: {fileID: 8317574547382692124, guid: 088d436d20419414585601f1e9a2ffc7, type: 3}
   enemyLPrefab: {fileID: 8768851254675794922, guid: 3a916adf98058fd43a4151759afb3aa1, type: 3}
   enemyMPrefab: {fileID: 1576781351567425952, guid: b35b0ae805e8b9147afcd3fad477b339, type: 3}
   enemySPrefab: {fileID: 4213417231637833537, guid: 5a3e11258468cc5449b48089c795c18e, type: 3}
@@ -3012,6 +3003,8 @@ MonoBehaviour:
   bulletEnemyAPrefab: {fileID: 7053644503541123586, guid: 9f3358f68a93d6948bb99cf90541e863, type: 3}
   bulletEnemyBPrefab: {fileID: 7053644503541123586, guid: 54feff70b51a9a5469d9f3ecc97ef6ff, type: 3}
   bulletFollowerPrefab: {fileID: 7053644503541123586, guid: 0d29dee99b8f9304f92f3f720534856c, type: 3}
+  bulletBossAPrefab: {fileID: 7053644503541123586, guid: b190b12b0c97968449a532aa9a803a16, type: 3}
+  bulletBossBPrefab: {fileID: 7053644503541123586, guid: f51b9e92e9f049146947867454fbbd86, type: 3}
 --- !u!4 &1649650561
 Transform:
   m_ObjectHideFlags: 0
