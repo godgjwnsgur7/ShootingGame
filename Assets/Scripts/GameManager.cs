@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour
         while(stringReader != null)
         {
             string line = stringReader.ReadLine();
-            Debug.Log(line);
 
             if (line == null)
                 break;

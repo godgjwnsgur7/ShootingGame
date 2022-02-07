@@ -30,6 +30,8 @@ public class Player : MonoBehaviour
     public GameManager gameManager;
     public ObjectManager objectManager;
 
+    public GameObject[] followers;
+
     Animator anim;
 
     void Awake()
@@ -38,7 +40,7 @@ public class Player : MonoBehaviour
         life = 3;
         bulletSpeed = 7;
         speed = 5;
-        maxPower = 3;
+        maxPower = 6;
         boom = 0;
         maxBoom = 3;
         maxShotDelay = 0.15f;
@@ -46,8 +48,6 @@ public class Player : MonoBehaviour
     void OnEnable()
     {
         power = 1;
-        boom = 0;
-        gameManager.UpdateBoomIcon(boom);
     }
 
     void Update()
@@ -98,7 +98,7 @@ public class Player : MonoBehaviour
                 rigidR.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
                 rigidL.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
                 break;
-            case 3: // Power 3
+            default: // Power 3~6
                 GameObject bulletRR = objectManager.MakeObj("BulletPlayerA");
                 bulletRR.transform.position = transform.position + Vector3.right * 0.35f;
                 GameObject bulletCC = objectManager.MakeObj("BulletPlayerB");
@@ -209,10 +209,16 @@ public class Player : MonoBehaviour
         else if(collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
             if (isHit) return;
-            
             isHit = true;
+            
             life--;
             gameManager.UpdateLifeIcon(life);
+            
+            boom = 0;
+            gameManager.UpdateBoomIcon(boom);
+            
+            for(int i =0; i < 3; i++)
+                followers[i].SetActive(false);
 
             if (life == 0)
                 gameManager.GameOver();
@@ -234,7 +240,10 @@ public class Player : MonoBehaviour
                     if (power == maxPower)
                         score += 500;
                     else
+                    {
                         power++;
+                        AddFollower();
+                    }
                     break;
                 case "Boom":
                     if (boom == maxBoom)
@@ -248,6 +257,16 @@ public class Player : MonoBehaviour
             }
             collision.gameObject.SetActive(false);
         }
+    }
+
+    void AddFollower()
+    {
+        if (power == 4)
+            followers[0].SetActive(true);
+        else if (power == 5)
+            followers[1].SetActive(true);
+        else if (power == 6)
+            followers[2].SetActive(true);
     }
 
     void OffBoomEffect()
