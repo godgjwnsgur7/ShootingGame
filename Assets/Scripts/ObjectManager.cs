@@ -20,6 +20,8 @@ public class ObjectManager : MonoBehaviour
     public GameObject bulletFollowerPrefab;
     public GameObject bulletBossAPrefab;
     public GameObject bulletBossBPrefab;
+    
+    public GameObject explosionPrefab;
 
     GameObject[] enemyB;
     GameObject[] enemyL;
@@ -38,6 +40,7 @@ public class ObjectManager : MonoBehaviour
     GameObject[] bulletBossA;
     GameObject[] bulletBossB;
 
+    GameObject[] explosion;
     GameObject[] targetPool;
 
     void Awake()
@@ -59,6 +62,7 @@ public class ObjectManager : MonoBehaviour
         bulletBossA = new GameObject[500];
         bulletBossB = new GameObject[50];
 
+        explosion = new GameObject[20];
 
         Generate();
     }
@@ -139,6 +143,13 @@ public class ObjectManager : MonoBehaviour
             bulletBossB[index] = Instantiate(bulletBossBPrefab);
             bulletBossB[index].SetActive(false);
         }
+
+        // #.4 Effect
+        for (int index = 0; index < explosion.Length; index++)
+        {
+            explosion[index] = Instantiate(explosionPrefab);
+            explosion[index].SetActive(false);
+        }
     }
 
     public GameObject MakeObj(string type) // 오브젝트 풀에 접근할 수 있는 함수
@@ -186,6 +197,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletBossB":
                 targetPool = bulletBossB;
+                break;
+            case "Explosion":
+                targetPool = explosion;
                 break;
             default:
                 Debug.Log(targetPool + "MakeObj() switch not find");
@@ -250,6 +264,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "BulletBossB":
                 targetPool = bulletBossB;
+                break;
+            case "Explosion":
+                targetPool = explosion;
                 break;
             default:
                 Debug.Log(targetPool + "GetPool() switch not find");

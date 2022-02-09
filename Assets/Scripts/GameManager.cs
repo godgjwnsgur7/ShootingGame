@@ -7,6 +7,13 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
+    public int stage;
+    public int maxStage;
+    public Animator stageAnim;
+    public Animator clearAnim;
+    public Animator fadeAnim;
+    public Transform playerPos;
+
     public string[] enemyObjs;
     public Transform[] spawnPoints;
 
@@ -29,8 +36,10 @@ public class GameManager : MonoBehaviour
     {
         spawnList = new List<Spawn>();
         enemyObjs = new string[] { "EnemyS", "EnemyM", "EnemyL", "EnemyB" };
+        stage = 1;
+        maxStage = 2;
         nextSpawnDelay = 2f;
-        ReadSpawnFile();
+        StageStart();
     }
 
     void Update()
@@ -56,7 +65,7 @@ public class GameManager : MonoBehaviour
         spawnEnd = false;
 
         // #2.Read Respawn File
-        TextAsset textFile = Resources.Load("Stage 0") as TextAsset;
+        TextAsset textFile = Resources.Load("Stage " + stage.ToString()) as TextAsset;
         StringReader stringReader = new StringReader(textFile.text);
 
         // #3.Save Data
@@ -108,6 +117,7 @@ public class GameManager : MonoBehaviour
         Rigidbody2D rigid = enemy.GetComponent<Rigidbody2D>();
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player; // 적 생성후 플레이어 변수를 넘겨줌
+        enemyLogic.gameManager = this;
         enemyLogic.objectManager = objectManager;
 
         if(enemyPoint == 5 || enemyPoint == 6) //#.Right Spawn
@@ -158,16 +168,6 @@ public class GameManager : MonoBehaviour
             boomImage[i].color = new Color(1, 1, 1, 1); // 반투명
     }
 
-    public void GameOver()
-    {
-        GameOverSet.SetActive(true);
-    }
-
-    public void GameRetry()
-    {
-        SceneManager.LoadScene(0); // 씬 빌드에 할당된 번호 (씬 이름도 가능)
-    }
-
     public void RespawnPlayer()
     {
         Invoke("RespawnPlayerExe", 2f);
@@ -180,5 +180,67 @@ public class GameManager : MonoBehaviour
 
         Player playerLogic = player.GetComponent<Player>();
         playerLogic.isHit = false;
+    }
+
+    public void CallExplosion(Vector3 pos, string type)
+    {
+        GameObject explosion = objectManager.MakeObj("Explosion");
+        Explosion explosionLogic = explosion.GetComponent<Explosion>();
+
+        explosion.transform.position = pos;
+        explosionLogic.StartExplosion(type);
+    }
+
+    public void StageStart()
+    {
+        //#.Stage UI Load
+        stageAnim.SetTrigger("On");
+        stageAnim.GetComponent<Text>().text = "STAGE " + stage + "\nSTART";
+        clearAnim.GetComponent<Text>().text = "STAGE " + stage + "\nCLEAR!";
+
+        //#. Enemy Spawn File Read
+        ReadSpawnFile();
+
+        //#. Fade In
+        fadeAnim.SetTrigger("In");
+    }
+
+    public void StageEnd()
+    {
+        Player playerLogic = player.GetComponent<Player>();
+        playerLogic.PlayerReset();
+
+        //#.Clear UI Load
+        clearAnim.SetTrigger("On");
+
+        //#. Fade Out
+        fadeAnim.SetTrigger("Out");
+
+        //#. Player Repos
+        player.transform.position = playerPos.position;
+
+        //#.Stage Increament
+        stage++;
+        if (stage > maxStage)
+            Invoke("GameClear", 3f);
+        else
+            Invoke("StageStart", 3f);
+    }
+
+    public void GameOver()
+    {
+        GameOverSet.SetActive(true);
+    }
+
+    public void GameClear()
+    {
+        GameOverSet.transform.GetChild(0).gameObject.SetActive(false);
+        GameOverSet.transform.GetChild(1).gameObject.SetActive(true);
+        GameOverSet.SetActive(true);
+    }
+
+    public void GameRetry()
+    {
+        SceneManager.LoadScene(0); // 씬 빌드에 할당된 번호 (씬 이름도 가능)
     }
 }

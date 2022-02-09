@@ -23,6 +23,7 @@ public class Enemy : MonoBehaviour
     public GameObject ItemPower;
 
     public GameObject player;
+    public GameManager gameManager;
     public ObjectManager objectManager;
 
     SpriteRenderer spriteRenderer;
@@ -46,7 +47,7 @@ public class Enemy : MonoBehaviour
         switch (enemyName)
         {
             case "B":
-                health = 3000;
+                health = 100;
                 Invoke("Stop", 2f);
                 break;
             case "L":
@@ -167,7 +168,7 @@ public class Enemy : MonoBehaviour
             bullet.transform.rotation = Quaternion.identity;
 
             Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
-            Vector2 dirVec = new Vector2(Mathf.Cos(Mathf.PI * curPatternCount / maxPatternCount[patternIndex]), -1);
+            Vector2 dirVec = new Vector2(Mathf.Cos(Mathf.PI * 5 * curPatternCount / maxPatternCount[patternIndex]), -1);
             rigid.AddForce(dirVec.normalized * bulletSpeed * 1.7f, ForceMode2D.Impulse);
         }
 
@@ -295,6 +296,11 @@ public class Enemy : MonoBehaviour
 
             gameObject.SetActive(false);
             transform.rotation = Quaternion.identity;
+            gameManager.CallExplosion(transform.position, enemyName);
+
+            //#.Boss Kill
+            if (enemyName == "B")
+                gameManager.StageEnd();
         }
     }
 

@@ -23,6 +23,7 @@ public class Follower : MonoBehaviour
         maxShotDelay = 2f;
         followDelay = 15; // frame
     }
+
     void Update()
     {
         Watch();
@@ -40,7 +41,7 @@ public class Follower : MonoBehaviour
         //#.Output Pos
         if (parentPos.Count > followDelay)
             followPos = parentPos.Dequeue();
-        else if (parentPos.Count > followDelay)
+        else if (parentPos.Count < followDelay)
             followPos = Parent.position;
     }
 
