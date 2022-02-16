@@ -12,8 +12,11 @@ public class Enemy : MonoBehaviour
     public int health;
     public Sprite[] sprites; // Basic Image 0, Hit Image 1
 
-    public float maxShotDelay;
-    public float curShotDelay;
+    float maxShotDelay;
+    float curShotDelay;
+
+    float maxDropDelay;
+    float curDropDelay;
 
     public GameObject bulletObjA;
     public GameObject bulletObjB;
@@ -33,6 +36,8 @@ public class Enemy : MonoBehaviour
     public int curPatternCount;
     public int[] maxPatternCount;
 
+    public bool bossActive = false;
+
     void Awake()
     {
         if(enemyName == "B")
@@ -40,21 +45,23 @@ public class Enemy : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         bulletSpeed = 4;
-        maxShotDelay = 3;
+        maxShotDelay = 2.5f;
+        maxDropDelay = 7;
     }
     void OnEnable()
     {
         switch (enemyName)
         {
             case "B":
-                health = 100;
+                bossActive = false;
+                health = 2000;
                 Invoke("Stop", 2f);
                 break;
             case "L":
-                health = 40;
+                health = 50;
                 break;
             case "M":
-                health = 10;
+                health = 15;
                 break;
             case "S":
                 health = 3;
@@ -64,10 +71,23 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         if (enemyName == "B")
+        {
+            Boss();
             return;
+        }
 
         Fire();
         Reload();
+    }
+
+    void Boss()
+    {
+        curDropDelay += Time.deltaTime;
+        if(bossActive && gameObject.activeSelf)
+           gameManager.bossHpbar.HandleHp((float)health);
+
+        if (curDropDelay > maxDropDelay)
+            ItemDrop();
     }
 
     void Stop()
@@ -75,6 +95,9 @@ public class Enemy : MonoBehaviour
         if (!gameObject.activeSelf)
             return;
 
+        gameManager.bossHpbar.maxHp = health;
+        gameManager.bossHpbar.gameObject.SetActive(true);
+        bossActive = true;
         Rigidbody2D rigid = GetComponent<Rigidbody2D>();
         rigid.velocity = Vector2.zero;
 
@@ -83,7 +106,10 @@ public class Enemy : MonoBehaviour
 
     void Think()
     {
-        patternIndex = patternIndex == 3 ? 0 : patternIndex + 1;
+        if (!gameObject.activeSelf)
+            return;
+
+        patternIndex = Random.Range(0, 4);
         curPatternCount = 0; // 패턴 변경 시, 패턴 실행 횟수 변수 초기화
 
         switch(patternIndex)
@@ -105,6 +131,8 @@ public class Enemy : MonoBehaviour
 
     void FireFoward()
     {
+        if (!gameObject.activeSelf) return;
+
         //#. Fire 4 Bullet Foward
         GameObject bulletR = objectManager.MakeObj("BulletBossB");
         bulletR.transform.position = transform.position + Vector3.right * 0.3f;
@@ -137,8 +165,10 @@ public class Enemy : MonoBehaviour
     void FireShot()
     {
         //#.Fire 5 Random Shotgun Bullet to Player
-        for(int i=0; i < 5; i++)
+        for (int i=0; i < 5; i++)
         {
+            if (!gameObject.activeSelf) return;
+
             GameObject bullet = objectManager.MakeObj("BulletEnemyB");
             bullet.transform.position = transform.position;
             
@@ -153,7 +183,7 @@ public class Enemy : MonoBehaviour
         curPatternCount++;
 
         if (curPatternCount < maxPatternCount[patternIndex])
-            Invoke("FireShot", 0.7f);
+            Invoke("FireShot", 1f);
         else
             Invoke("Think", 3f);
     }
@@ -163,6 +193,8 @@ public class Enemy : MonoBehaviour
         //#.Rire Arc Continue Fire
         for (int i = 0; i < 5; i++)
         {
+            if (!gameObject.activeSelf) return;
+
             GameObject bullet = objectManager.MakeObj("BulletEnemyA");
             bullet.transform.position = transform.position;
             bullet.transform.rotation = Quaternion.identity;
@@ -176,7 +208,7 @@ public class Enemy : MonoBehaviour
         curPatternCount++;
 
         if (curPatternCount < maxPatternCount[patternIndex])
-            Invoke("FireArc", 0.15f);
+            Invoke("FireArc", 0.1f);
         else
             Invoke("Think", 3);
     }
@@ -185,21 +217,24 @@ public class Enemy : MonoBehaviour
     {
         //#.Fire Around
         int roundNumA = 45;
-        int roundNumB = 35;
+        int roundNumB = 50;
         int roundNum = curPatternCount % 2 == 0 ? roundNumA : roundNumB;
         for(int i = 0; i < roundNumA; i++)
         {
+            if (!gameObject.activeSelf) return;
+
             GameObject bullet = objectManager.MakeObj("BulletBossA");
             bullet.transform.position = transform.position;
             bullet.transform.rotation = Quaternion.identity;
 
             Rigidbody2D rigid = bullet.GetComponent<Rigidbody2D>();
             Vector2 dirVec = new Vector2(Mathf.Cos(Mathf.PI * 2 * i / roundNum)
-                                        ,Mathf.Sin(Mathf.PI * 2 * i / roundNum));
-            rigid.AddForce(dirVec.normalized * bulletSpeed*1.5f, ForceMode2D.Impulse);
+                                        , Mathf.Sin(Mathf.PI * 2 * i / roundNum));
 
+            rigid.AddForce(dirVec.normalized * bulletSpeed, ForceMode2D.Impulse);
 
             Vector3 rotVec = Vector3.forward * 360 * i / roundNum + Vector3.forward * 90;
+            
             bullet.transform.Rotate(rotVec); 
         }
 
@@ -207,14 +242,14 @@ public class Enemy : MonoBehaviour
         curPatternCount++;
 
         if (curPatternCount < maxPatternCount[patternIndex])
-            Invoke("FireAround", 1f);
+            Invoke("FireAround", 1.5f);
         else
             Invoke("Think", 3);
     }
 
     void Fire()
     {
-       if (curShotDelay < maxShotDelay)
+        if (curShotDelay < maxShotDelay)
             return;
 
        if(enemyName == "S")
@@ -251,11 +286,30 @@ public class Enemy : MonoBehaviour
         curShotDelay += Time.deltaTime;
     }
 
+    void ItemDrop()
+    {
+        int ran = Random.Range(0, 5);
+
+        if (ran == 0)
+        {
+            GameObject itemBoom = objectManager.MakeObj("ItemBoom");
+            itemBoom.transform.position = transform.position;
+        }
+        else
+        {
+            GameObject itemPower = objectManager.MakeObj("ItemPower");
+            itemPower.transform.position = transform.position;
+        }
+
+        curDropDelay = 0;
+    }
+
     public void OnHit(int dmg)
     {
         if (health <= 0)
             return;
 
+        int ran;
         health -= dmg;
 
         if(enemyName == "B")
@@ -272,7 +326,7 @@ public class Enemy : MonoBehaviour
             playerLogic.score += enemyScore;
 
             //#.Random Ratio Item Drop
-            int ran = enemyName == "B" ? 0 : Random.Range(0, 10);
+            ran = enemyName == "B" ? 0 : Random.Range(0, 10);
 
             if (ran < 5)
             {
@@ -300,7 +354,10 @@ public class Enemy : MonoBehaviour
 
             //#.Boss Kill
             if (enemyName == "B")
+            {
+                curPatternCount = 0;
                 gameManager.StageEnd();
+            }
         }
     }
 

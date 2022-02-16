@@ -5,15 +5,16 @@ using UnityEngine;
 public class Follower : MonoBehaviour
 {
     int bulletSpeed;
-    public float maxShotDelay;
-    public float curShotDelay;
+    float maxShotDelay;
+    float curShotDelay;
 
-    public ObjectManager objectManager;
+    [SerializeField] ObjectManager objectManager;
+    [SerializeField] Player player;
 
-    public Vector3 followPos;
-    public int followDelay;
-    public Transform Parent;
-    public Queue<Vector3> parentPos;
+     Vector3 followPos;
+     int followDelay;
+    [SerializeField] Transform Parent;
+     Queue<Vector3> parentPos;
 
 
     void Awake()
@@ -52,7 +53,7 @@ public class Follower : MonoBehaviour
 
     void Fire()
     {
-        if (!Input.GetButton("Fire1") || curShotDelay < maxShotDelay)
+        if (!player.isButtonA || curShotDelay < maxShotDelay)
             return;
 
         GameObject bullet = objectManager.MakeObj("BulletFollower");

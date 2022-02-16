@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Background : MonoBehaviour
 {
-    public float speed;
-    public int startIndex;
-    public int endIndex;
-    public Transform[] sprites;
+    [SerializeField] float speed;
+    [SerializeField] int startIndex;
+    [SerializeField] int endIndex;
+    [SerializeField] Transform[] sprites;
     
     float veiwHeight;
 

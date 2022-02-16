@@ -7,6 +7,9 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
+    public int maxScore;
+    public int curScore;
+
     public int stage;
     public int maxStage;
     public Animator stageAnim;
@@ -26,6 +29,8 @@ public class GameManager : MonoBehaviour
     public Image[] boomImage;
     public GameObject GameOverSet;
     public ObjectManager objectManager;
+    public Player playerLogic;
+    public BossHpbar bossHpbar;
 
     public List<Spawn> spawnList;
     public int spawnIndex;
@@ -37,7 +42,7 @@ public class GameManager : MonoBehaviour
         spawnList = new List<Spawn>();
         enemyObjs = new string[] { "EnemyS", "EnemyM", "EnemyL", "EnemyB" };
         stage = 1;
-        maxStage = 2;
+        maxStage = 3;
         nextSpawnDelay = 2f;
         StageStart();
     }
@@ -63,6 +68,8 @@ public class GameManager : MonoBehaviour
         spawnList.Clear();
         spawnIndex = 0;
         spawnEnd = false;
+
+        Debug.Log("ReadSpawnFile");
 
         // #2.Read Respawn File
         TextAsset textFile = Resources.Load("Stage " + stage.ToString()) as TextAsset;
@@ -191,12 +198,107 @@ public class GameManager : MonoBehaviour
         explosionLogic.StartExplosion(type);
     }
 
+    public void Remove_Enemy()
+    {
+        GameObject[] enemiesL = objectManager.GetPool("EnemyL");
+        GameObject[] enemiesM = objectManager.GetPool("EnemyM");
+        GameObject[] enemiesS = objectManager.GetPool("EnemyS");
+
+        for (int i = 0; i < enemiesL.Length; i++)
+        {
+            if (enemiesL[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesL[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(50);
+            }
+        }
+        for (int i = 0; i < enemiesM.Length; i++)
+        {
+            if (enemiesM[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesM[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(50);
+            }
+        }
+        for (int i = 0; i < enemiesS.Length; i++)
+        {
+            if (enemiesS[i].activeSelf)
+            {
+                Enemy enemyLogic = enemiesS[i].GetComponent<Enemy>();
+                enemyLogic.OnHit(50);
+            }
+        }
+    }
+
+    public void Remove_EnemyBullet()
+    {
+        GameObject[] bulletsA = objectManager.GetPool("BulletEnemyA");
+        GameObject[] bulletsB = objectManager.GetPool("BulletEnemyB");
+        GameObject[] bulletsC = objectManager.GetPool("BulletBossA");
+        GameObject[] bulletsD = objectManager.GetPool("BulletBossB");
+
+        for (int i = 0; i < bulletsA.Length; i++)
+        {
+            if (bulletsA[i].activeSelf)
+                bulletsA[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletsB.Length; i++)
+        {
+            if (bulletsB[i].activeSelf)
+                bulletsB[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletsC.Length; i++)
+        {
+            if (bulletsC[i].activeSelf)
+                bulletsC[i].SetActive(false);
+        }
+        for (int i = 0; i < bulletsD.Length; i++)
+        {
+            if (bulletsD[i].activeSelf)
+                bulletsD[i].SetActive(false);
+        }
+
+        Invoke("Remove_EnemyBulletExe", 0.1f);
+    }
+
+    void Remove_EnemyBulletExe()
+    {
+        if (playerLogic.isBoomTime)
+            Remove_EnemyBullet();
+    }
+
+    public void Remove_Item()
+    {
+        GameObject[] itemCoin = objectManager.GetPool("ItemCoin");
+        GameObject[] itemPower = objectManager.GetPool("ItemPower");
+        GameObject[] itemBoom = objectManager.GetPool("ItemBoom");
+
+        for (int i = 0; i < itemCoin.Length; i++)
+        {
+            if (itemCoin[i].activeSelf)
+                itemCoin[i].SetActive(false);
+        }
+        for (int i = 0; i < itemPower.Length; i++)
+        {
+            if (itemPower[i].activeSelf)
+                itemPower[i].SetActive(false);
+        }
+        for (int i = 0; i < itemBoom.Length; i++)
+        {
+            if (itemBoom[i].activeSelf)
+                itemBoom[i].SetActive(false);
+        }
+    }
+
     public void StageStart()
     {
+        playerLogic.isRespawnTime = false;
+        playerLogic.isGameStop = false;
+
         //#.Stage UI Load
-        stageAnim.SetTrigger("On");
         stageAnim.GetComponent<Text>().text = "STAGE " + stage + "\nSTART";
         clearAnim.GetComponent<Text>().text = "STAGE " + stage + "\nCLEAR!";
+        stageAnim.SetTrigger("On");
 
         //#. Enemy Spawn File Read
         ReadSpawnFile();
@@ -207,8 +309,18 @@ public class GameManager : MonoBehaviour
 
     public void StageEnd()
     {
-        Player playerLogic = player.GetComponent<Player>();
+        playerLogic.isGameStop = true;
         playerLogic.PlayerReset();
+        bossHpbar.gameObject.SetActive(false);
+        bossHpbar.SetHp();
+
+        Remove_Enemy();
+        Remove_EnemyBullet();
+        Remove_Item();
+
+        if(playerLogic.life != 3)
+            playerLogic.life++;
+        UpdateLifeIcon(playerLogic.life);
 
         //#.Clear UI Load
         clearAnim.SetTrigger("On");

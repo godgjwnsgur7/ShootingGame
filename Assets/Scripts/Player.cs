@@ -4,57 +4,59 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    int bulletSpeed;
     public int life;
     public int score;
-
-    public int speed;
     public int power;
-    public int maxPower;
     public int boom;
-    public int maxBoom;
-    public float maxShotDelay;
-    public float curShotDelay;
 
-    public bool isTouchTop;
-    public bool isTouchBottom;
-    public bool isTouchLeft;
-    public bool isTouchRight;
+    int bulletSpeed;
+    int vector_h;
+
+    int speed;
+    int maxPower;
+    int maxBoom;
+    float maxShotDelay;
+    float curShotDelay;
+
+    bool isTouchTop;
+    bool isTouchBottom;
+    bool isTouchLeft;
+    bool isTouchRight;
 
     public bool isBoomTime;
     public bool isHit;
     public bool isRespawnTime;
+    public bool isGameStop;
 
-    public bool[] joyControl;
-    public bool isControl;
     public bool isButtonA;
-    public bool isButtonB;
+    bool isButtonB;
 
-    public GameObject BoomEffect;
+    [SerializeField] GameObject BoomEffect;
 
-    public GameManager gameManager;
-    public ObjectManager objectManager;
+    [SerializeField] GameManager gameManager;
+    [SerializeField] ObjectManager objectManager;
+    [SerializeField] Joystick joystick;
 
-    public GameObject[] followers;
+    [SerializeField] GameObject[] followers;
 
     Animator anim;
     SpriteRenderer spriteRenderer;
+    
 
     void Awake()
     {
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        life = 3;
-        bulletSpeed = 7;
-        speed = 5;
-        maxPower = 6;
-        boom = 0;
-        maxBoom = 3;
-        maxShotDelay = 0.15f;
+        SetPlayer();
     }
     void OnEnable()
     {
-        power = 1;
+        if(power != 1)
+            power--;
+        
+        if (power > 4)
+            power = 4;
+
         if(life == 3)
             return;
         Unbeatable();
@@ -63,23 +65,41 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (isGameStop)
+            return;
         Move();
         Fire();
         Reload();
         Boom();
     }
 
+    void SetPlayer()
+    {
+        life = 3;
+        bulletSpeed = 7;
+        speed = 4;
+        power = 1;
+        maxPower = 7;
+        boom = 0;
+        maxBoom = 3;
+        maxShotDelay = 0.15f;
+        vector_h = 0;
+    }
+
     public void PlayerReset()
     {
-        power = 1;
+        if (power != 1)
+            power--;
+
+        if (power > 4)
+            power = 4;
+
         for (int i = 0; i < 3; i++)
             followers[i].SetActive(false);
 
         boom = 0;
         gameManager.UpdateBoomIcon(boom);
-
-        Unbeatable();
-        Invoke("Unbeatable", 2f);
+        isRespawnTime = true;
     }
 
     void Unbeatable()
@@ -98,49 +118,32 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void JoyPanel(int type)
-    {
-        for(int i = 0; i < 9; i++)
-            joyControl[i] = i == type;
-    }
-    public void JoyDown()
-    {
-        isControl = true;
-    }
-    public void JoyUp()
-    {
-        isControl = false;
-    }
-
     void Move()
     {
         //#. Keyboard Control Value
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-
+        // float h = Input.GetAxisRaw("Horizontal");
+        // float v = Input.GetAxisRaw("Vertical");
+        
         //#. Joy Control Value
-        if (joyControl[0]) { h = -1; v = 1; }
-        if (joyControl[1]) { h = 0; v = 1; }
-        if (joyControl[2]) { h = 1; v = 1; }
-        if (joyControl[3]) { h = -1; v = 0; }
-        if (joyControl[4]) { h = 0; v = 0; }
-        if (joyControl[5]) { h = 1; v = 0; }
-        if (joyControl[6]) { h = -1; v = -1; }
-        if (joyControl[7]) { h = 0; v = -1; }
-        if (joyControl[8]) { h = 1; v = -1; }
+        float h = joystick.Horizontal();
+        float v = joystick.Vertical();
 
-        if ((isTouchRight && h == 1) || (isTouchLeft && h == -1) || !isControl)
+        if (h > 0.4f)
+            vector_h = 1;
+        else if (h < -0.4f)
+            vector_h = -1;
+        else
+            vector_h = 0;
+
+        if ((isTouchRight && h > 0f) || (isTouchLeft && h < 0f))
             h = 0;
-        if ((isTouchTop && v == 1) || (isTouchBottom && v == -1) || !isControl)
+        if ((isTouchTop && v > 0f) || (isTouchBottom && v < 0f))
             v = 0;
 
-        Vector3 curPos = transform.position;
-        Vector3 nextPos = new Vector3(h, v, 0) * speed * Time.deltaTime;
+        anim.SetInteger("Input", vector_h);
 
-        transform.position = curPos + nextPos;
-
-        if (Input.GetButtonDown("Horizontal") || Input.GetButtonUp("Horizontal"))
-            anim.SetInteger("Input", (int)h);
+        if ( h != 0 || v != 0)
+            transform.position += new Vector3(h, v, 0) * speed * Time.deltaTime;
     }
 
     public void ButtonADown()
@@ -153,6 +156,7 @@ public class Player : MonoBehaviour
     }
     public void ButtonBDown()
     {
+        if (boom == 0) return;
         isButtonB = true;
     }
 
@@ -182,7 +186,13 @@ public class Player : MonoBehaviour
                 rigidR.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
                 rigidL.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
                 break;
-            default: // Power 3~6
+            case 3: // Power 3
+                GameObject bulletB = objectManager.MakeObj("BulletPlayerB");
+                bulletB.transform.position = transform.position;
+                Rigidbody2D rigidB = bulletB.GetComponent<Rigidbody2D>();
+                rigidB.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
+                break;
+            default: // Power 4~7
                 GameObject bulletRR = objectManager.MakeObj("BulletPlayerA");
                 bulletRR.transform.position = transform.position + Vector3.right * 0.35f;
                 GameObject bulletCC = objectManager.MakeObj("BulletPlayerB");
@@ -222,66 +232,13 @@ public class Player : MonoBehaviour
 
         //#1.Effect visible
         BoomEffect.SetActive(true);
-        Invoke("OffBoomEffect", 1.5f);
+        Invoke("OffBoomEffect", 2f);
 
-        //#2.Remove Enemy
-        GameObject[] enemiesL = objectManager.GetPool("EnemyL");
-        GameObject[] enemiesM = objectManager.GetPool("EnemyM");
-        GameObject[] enemiesS = objectManager.GetPool("EnemyS");
-        
-        for(int i = 0; i < enemiesL.Length; i++)
-        {
-            if(enemiesL[i].activeSelf)
-            {
-                Enemy enemyLogic = enemiesL[i].GetComponent<Enemy>();
-                enemyLogic.OnHit(50);
-            }
-        }
-        for (int i = 0; i < enemiesM.Length; i++)
-        {
-            if (enemiesM[i].activeSelf)
-            {
-                Enemy enemyLogic = enemiesM[i].GetComponent<Enemy>();
-                enemyLogic.OnHit(50);
-            }
-        }
-        for (int i = 0; i < enemiesS.Length; i++)
-        {
-            if (enemiesS[i].activeSelf)
-            {
-                Enemy enemyLogic = enemiesS[i].GetComponent<Enemy>();
-                enemyLogic.OnHit(50);
-            }
-        }
-
-        //#3. Remove Enemy Bullet
-        GameObject[] bulletsA = objectManager.GetPool("BulletEnemyA");
-        GameObject[] bulletsB = objectManager.GetPool("BulletEnemyB");
-        GameObject[] bulletsC = objectManager.GetPool("BulletBossA");
-        GameObject[] bulletsD = objectManager.GetPool("BulletBossB");
-
-        for (int i = 0; i < bulletsA.Length; i++)
-        {
-            if (bulletsA[i].activeSelf)
-                bulletsA[i].SetActive(false);
-        }
-        for (int i = 0; i < bulletsB.Length; i++)
-        {
-            if (bulletsB[i].activeSelf)
-                bulletsB[i].SetActive(false);
-        }
-        for (int i = 0; i < bulletsC.Length; i++)
-        {
-            if (bulletsC[i].activeSelf)
-                bulletsC[i].SetActive(false);
-        }
-        for (int i = 0; i < bulletsD.Length; i++)
-        {
-            if (bulletsD[i].activeSelf)
-                bulletsD[i].SetActive(false);
-        }
+        gameManager.Remove_Enemy();
+        gameManager.Remove_EnemyBullet();
     }
 
+    
 
     void OnTriggerEnter2D(Collider2D collision)
     {
@@ -325,6 +282,9 @@ public class Player : MonoBehaviour
                 gameManager.RespawnPlayer();
 
             gameObject.SetActive(false);
+
+            if (collision.gameObject.name == "Enemy Boss(Clone)")
+                return;
             collision.gameObject.SetActive(false);
         }
         else if(collision.gameObject.tag == "Item")
@@ -360,11 +320,11 @@ public class Player : MonoBehaviour
 
     void AddFollower()
     {
-        if (power == 4)
+        if (power == 5)
             followers[0].SetActive(true);
-        else if (power == 5)
-            followers[1].SetActive(true);
         else if (power == 6)
+            followers[1].SetActive(true);
+        else if (power == 7)
             followers[2].SetActive(true);
     }
 

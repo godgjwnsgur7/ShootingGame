@@ -167,7 +167,8 @@ MonoBehaviour:
   ItemCoin: {fileID: 0}
   ItemPower: {fileID: 0}
   player: {fileID: 0}
+  gameManager: {fileID: 0}
   objectManager: {fileID: 0}
   patternIndex: -1
   curPatternCount: 0
-  maxPatternCount: 030000000a000000630000000a000000
+  maxPatternCount: 030000000a0000006300000006000000
