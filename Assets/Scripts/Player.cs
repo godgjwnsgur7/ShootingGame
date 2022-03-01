@@ -9,6 +9,9 @@ public class Player : MonoBehaviour
     public int power;
     public int boom;
 
+    public float h;
+    public float v;
+
     int bulletSpeed;
     int vector_h;
 
@@ -67,6 +70,7 @@ public class Player : MonoBehaviour
     {
         if (isGameStop)
             return;
+
         Move();
         Fire();
         Reload();
@@ -88,6 +92,12 @@ public class Player : MonoBehaviour
 
     public void PlayerReset()
     {
+        if (!isRespawnTime)
+        {
+            Unbeatable();
+            Invoke("Unbeatable", 2f);
+        }
+
         if (power != 1)
             power--;
 
@@ -98,8 +108,9 @@ public class Player : MonoBehaviour
             followers[i].SetActive(false);
 
         boom = 0;
+        life = 3;
         gameManager.UpdateBoomIcon(boom);
-        isRespawnTime = true;
+        gameManager.UpdateLifeIcon(life);
     }
 
     void Unbeatable()
@@ -125,22 +136,22 @@ public class Player : MonoBehaviour
         // float v = Input.GetAxisRaw("Vertical");
         
         //#. Joy Control Value
-        float h = joystick.Horizontal();
-        float v = joystick.Vertical();
+        h = joystick.Horizontal();
+        v = joystick.Vertical();
 
-        if (h > 0.4f)
+        if (h >= 0.6f)
             vector_h = 1;
-        else if (h < -0.4f)
+        else if (h <= -0.6f)
             vector_h = -1;
         else
             vector_h = 0;
+
+        anim.SetInteger("Input", vector_h);
 
         if ((isTouchRight && h > 0f) || (isTouchLeft && h < 0f))
             h = 0;
         if ((isTouchTop && v > 0f) || (isTouchBottom && v < 0f))
             v = 0;
-
-        anim.SetInteger("Input", vector_h);
 
         if ( h != 0 || v != 0)
             transform.position += new Vector3(h, v, 0) * speed * Time.deltaTime;

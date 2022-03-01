@@ -56,6 +56,7 @@
     <Compile Include="Assets\Scripts\Joystick.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\Background.cs" />
+    <Compile Include="Assets\Scripts\BossHpbar.cs" />
     <Compile Include="Assets\Scripts\Follower.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
@@ -65,7 +66,6 @@
     <Compile Include="Assets\Scripts\Explosion.cs" />
     <Compile Include="Assets\Scripts\Spawn.cs" />
     <Compile Include="Assets\Scripts\ObjectManager.cs" />
-    <Compile Include="Assets\Scripts\BossHpbar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\Stage 1.txt" />

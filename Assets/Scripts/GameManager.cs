@@ -292,7 +292,6 @@ public class GameManager : MonoBehaviour
 
     public void StageStart()
     {
-        playerLogic.isRespawnTime = false;
         playerLogic.isGameStop = false;
 
         //#.Stage UI Load
@@ -317,10 +316,6 @@ public class GameManager : MonoBehaviour
         Remove_Enemy();
         Remove_EnemyBullet();
         Remove_Item();
-
-        if(playerLogic.life != 3)
-            playerLogic.life++;
-        UpdateLifeIcon(playerLogic.life);
 
         //#.Clear UI Load
         clearAnim.SetTrigger("On");

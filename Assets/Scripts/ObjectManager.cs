@@ -8,7 +8,7 @@ public class ObjectManager : MonoBehaviour
     public GameObject enemyLPrefab;
     public GameObject enemyMPrefab;
     public GameObject enemySPrefab;
-
+    
     public GameObject itemBoomPrefab;
     public GameObject itemCoinPrefab;
     public GameObject itemPowerPrefab;
@@ -46,9 +46,9 @@ public class ObjectManager : MonoBehaviour
     void Awake()
     {
         enemyB = new GameObject[2];
-        enemyL = new GameObject[20];
-        enemyM = new GameObject[20];
-        enemyS = new GameObject[20];
+        enemyL = new GameObject[50];
+        enemyM = new GameObject[50];
+        enemyS = new GameObject[50];
 
         itemCoin = new GameObject[20];
         itemPower = new GameObject[10];
@@ -59,10 +59,10 @@ public class ObjectManager : MonoBehaviour
         bulletEnemyA = new GameObject[100];
         bulletEnemyB = new GameObject[100];
         bulletFollower = new GameObject[100];
-        bulletBossA = new GameObject[500];
+        bulletBossA = new GameObject[300];
         bulletBossB = new GameObject[50];
 
-        explosion = new GameObject[20];
+        explosion = new GameObject[30];
 
         Generate();
     }
@@ -152,7 +152,7 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    public GameObject MakeObj(string type) // 오브젝트 풀에 접근할 수 있는 함수
+    public GameObject MakeObj(string type)
     {
         switch (type)
         {
@@ -202,7 +202,7 @@ public class ObjectManager : MonoBehaviour
                 targetPool = explosion;
                 break;
             default:
-                Debug.Log(targetPool + "MakeObj() switch not find");
+                Debug.Log("MakeObj() switch not find");
                 break;
         }
 
@@ -219,7 +219,7 @@ public class ObjectManager : MonoBehaviour
         return null;
     }
 
-    public GameObject[] GetPool(string type) // 지정한 오브젝트 풀을 가져오는 함수
+    public GameObject[] GetPool(string type)
     {
         switch (type)
         {
@@ -269,7 +269,7 @@ public class ObjectManager : MonoBehaviour
                 targetPool = explosion;
                 break;
             default:
-                Debug.Log(targetPool + "GetPool() switch not find");
+                Debug.Log("GetPool() switch not find");
                 break;
         }
 

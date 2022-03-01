@@ -58,10 +58,10 @@ public class Enemy : MonoBehaviour
                 Invoke("Stop", 2f);
                 break;
             case "L":
-                health = 50;
+                health = 45;
                 break;
             case "M":
-                health = 15;
+                health = 12;
                 break;
             case "S":
                 health = 3;
@@ -208,7 +208,7 @@ public class Enemy : MonoBehaviour
         curPatternCount++;
 
         if (curPatternCount < maxPatternCount[patternIndex])
-            Invoke("FireArc", 0.1f);
+            Invoke("FireArc", 0.13f);
         else
             Invoke("Think", 3);
     }
@@ -309,7 +309,6 @@ public class Enemy : MonoBehaviour
         if (health <= 0)
             return;
 
-        int ran;
         health -= dmg;
 
         if(enemyName == "B")
@@ -326,7 +325,7 @@ public class Enemy : MonoBehaviour
             playerLogic.score += enemyScore;
 
             //#.Random Ratio Item Drop
-            ran = enemyName == "B" ? 0 : Random.Range(0, 10);
+            int ran = enemyName == "B" ? 0 : Random.Range(0, 10);
 
             if (ran < 5)
             {

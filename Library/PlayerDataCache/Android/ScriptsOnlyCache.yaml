@@ -17,7 +17,6 @@ ScriptsOnlyBuild:
     - UnityEditor.U2D.Animation.BoneGizmo
     Unity.2D.IK.Editor.dll:
     - UnityEditor.U2D.IK.IKEditorManager
-    - UnityEditor.U2D.IK.IKGizmos
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridPaintingState
     - UnityEditor.Tilemaps.GridPaletteBrushes
@@ -26,6 +25,8 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.SceneViewOpenTilePaletteHelper
     - UnityEditor.Tilemaps.TileDragAndDropManager
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
+    Unity.CollabProxy.Editor.dll:
+    - Unity.Cloud.Collaborate.UserInterface.CollaborateWindow
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
     UnityEditor.Graphs.dll:
@@ -126,6 +127,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 4246}
     - Class: 114
       Script: {instanceID: 5286}
+    - Class: 114
+      Script: {instanceID: 17730}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -351,7 +354,7 @@ ScriptsOnlyBuild:
     className: GraphicRaycaster
   - hash:
       serializedVersion: 2
-      Hash: 6378776529b1503a5c2122b227ee27ab
+      Hash: 051cad838464280761a72fe4c6ab4060
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Player
